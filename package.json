@@ -2,7 +2,7 @@
   "name": "codeowners-lsp",
   "displayName": "CODEOWNERS LSP",
   "description": "Language support for CODEOWNERS files - syntax highlighting, diagnostics, code actions, and ownership tracking via LSP",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "radiosilence",
   "license": "MIT",
   "repository": {
