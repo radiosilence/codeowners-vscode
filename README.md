@@ -5,6 +5,21 @@
 
 Language support for GitHub CODEOWNERS files via [codeowners-lsp](https://github.com/radiosilence/codeowners-lsp).
 
+## Installation
+
+### VS Marketplace (recommended)
+```
+ext install radiosilence.codeowners-lsp
+```
+
+### Manual install from GitHub
+1. Download the `.vsix` from [Releases](https://github.com/radiosilence/codeowners-vscode/releases/latest)
+2. Install via CLI:
+   ```bash
+   code --install-extension codeowners-lsp-*.vsix
+   ```
+   Or in VSCode: `Cmd+Shift+P` → "Extensions: Install from VSIX..."
+
 ## Features
 
 ### In CODEOWNERS files

@@ -12,9 +12,14 @@ import {
 } from "vscode-languageclient/node";
 
 let client: LanguageClient | undefined;
+let outputChannel: vscode.OutputChannel;
 
 const GITHUB_REPO = "radiosilence/codeowners-lsp";
 const BINARY_NAME = "codeowners-lsp";
+
+function log(message: string): void {
+  outputChannel.appendLine(`[${new Date().toISOString()}] ${message}`);
+}
 
 interface GithubRelease {
   tag_name: string;
@@ -200,15 +205,19 @@ function findBinaryInPath(): string | null {
 async function ensureBinary(
   context: vscode.ExtensionContext
 ): Promise<string | null> {
+  log("Ensuring binary is available...");
   const config = vscode.workspace.getConfiguration("codeowners");
   const customPath = config.get<string>("serverPath");
 
   // Custom path takes precedence
   if (customPath?.trim()) {
     const expandedPath = customPath.replace(/^~/, os.homedir());
+    log(`Custom path configured: ${expandedPath}`);
     if (fs.existsSync(expandedPath)) {
+      log("Custom binary found");
       return expandedPath;
     }
+    log("Custom binary NOT found");
     void vscode.window.showErrorMessage(
       `CODEOWNERS: Custom server path not found: ${customPath}`
     );
@@ -216,10 +225,13 @@ async function ensureBinary(
   }
 
   // Check PATH
+  log("Checking PATH for binary...");
   const pathBinary = findBinaryInPath();
   if (pathBinary) {
+    log(`Found in PATH: ${pathBinary}`);
     return pathBinary;
   }
+  log("Not found in PATH");
 
   // Download from GitHub releases
   const storagePath = getStoragePath(context);
@@ -238,12 +250,16 @@ async function ensureBinary(
   }
 
   // Fetch latest release
+  log("Fetching latest release from GitHub...");
   let release: GithubRelease;
   try {
     release = await getLatestRelease();
+    log(`Latest release: ${release.tag_name}`);
   } catch (err) {
+    log(`Failed to fetch release: ${String(err)}`);
     if (currentVersion && fs.existsSync(binaryPath)) {
       // Use cached version if we can't fetch
+      log("Using cached binary");
       return binaryPath;
     }
     void vscode.window.showErrorMessage(
@@ -450,11 +466,14 @@ function getClientOptions(): LanguageClientOptions {
 }
 
 async function startClient(context: vscode.ExtensionContext): Promise<void> {
+  log("Starting language client...");
   const binaryPath = await ensureBinary(context);
   if (!binaryPath) {
+    log("No binary available, cannot start client");
     return;
   }
 
+  log(`Using binary: ${binaryPath}`);
   const serverOptions = getServerOptions(binaryPath);
   const clientOptions = getClientOptions();
 
@@ -465,7 +484,13 @@ async function startClient(context: vscode.ExtensionContext): Promise<void> {
     clientOptions
   );
 
-  await client.start();
+  try {
+    await client.start();
+    log("Language client started successfully");
+  } catch (err) {
+    log(`Failed to start client: ${String(err)}`);
+    void vscode.window.showErrorMessage(`CODEOWNERS: Failed to start language server: ${String(err)}`);
+  }
 }
 
 async function restartClient(context: vscode.ExtensionContext): Promise<void> {
@@ -479,6 +504,12 @@ async function restartClient(context: vscode.ExtensionContext): Promise<void> {
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  outputChannel = vscode.window.createOutputChannel("CODEOWNERS LSP");
+  context.subscriptions.push(outputChannel);
+
+  log("Extension activating...");
+  log(`Storage path: ${context.globalStorageUri.fsPath}`);
+
   // Register commands
   context.subscriptions.push(
     vscode.commands.registerCommand("codeowners.restartServer", () =>

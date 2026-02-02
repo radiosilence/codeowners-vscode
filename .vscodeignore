@@ -1,9 +1,12 @@
 .vscode/**
 .vscode-test/**
+.github/**
+.claude/**
 src/**
 node_modules/**
 .gitignore
 .eslintrc.json
+eslint.config.mjs
 tsconfig.json
 **/*.ts
 **/*.map

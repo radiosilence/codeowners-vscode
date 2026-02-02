@@ -24,9 +24,7 @@
     "code review"
   ],
   "activationEvents": [
-    "workspaceContains:**/CODEOWNERS",
-    "workspaceContains:**/.github/CODEOWNERS",
-    "workspaceContains:**/docs/CODEOWNERS"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -225,7 +223,8 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run build",
+    "build": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --minify",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
@@ -240,6 +239,7 @@
     "@types/node": "^22.0.0",
     "@types/vscode": "^1.85.0",
     "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.27.2",
     "eslint": "^9.0.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.0.0"
