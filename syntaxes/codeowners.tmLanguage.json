@@ -1,0 +1,53 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "CODEOWNERS",
+  "scopeName": "source.codeowners",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#rule" }
+  ],
+  "repository": {
+    "comment": {
+      "name": "comment.line.number-sign.codeowners",
+      "match": "#.*$"
+    },
+    "rule": {
+      "patterns": [
+        { "include": "#pattern" },
+        { "include": "#owner" }
+      ]
+    },
+    "pattern": {
+      "patterns": [
+        {
+          "name": "entity.name.tag.pattern.codeowners",
+          "match": "^[^#\\s@][^\\s]*"
+        },
+        {
+          "name": "keyword.operator.glob.codeowners",
+          "match": "\\*\\*|\\*|\\?"
+        },
+        {
+          "name": "punctuation.separator.path.codeowners",
+          "match": "/"
+        }
+      ]
+    },
+    "owner": {
+      "patterns": [
+        {
+          "name": "entity.name.type.team.codeowners",
+          "match": "@[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+"
+        },
+        {
+          "name": "entity.name.type.user.codeowners",
+          "match": "@[a-zA-Z0-9_-]+"
+        },
+        {
+          "name": "string.email.codeowners",
+          "match": "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
+        }
+      ]
+    }
+  }
+}

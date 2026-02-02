@@ -1,0 +1,247 @@
+{
+  "name": "codeowners-lsp",
+  "displayName": "CODEOWNERS LSP",
+  "description": "Language support for CODEOWNERS files - syntax highlighting, diagnostics, code actions, and ownership tracking via LSP",
+  "version": "0.1.0",
+  "publisher": "radiosilence",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/radiosilence/codeowners-vscode"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Formatters"
+  ],
+  "keywords": [
+    "codeowners",
+    "github",
+    "ownership",
+    "code review"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/CODEOWNERS",
+    "workspaceContains:**/.github/CODEOWNERS",
+    "workspaceContains:**/docs/CODEOWNERS"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "codeowners",
+        "aliases": [
+          "CODEOWNERS",
+          "codeowners"
+        ],
+        "filenames": [
+          "CODEOWNERS"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "codeowners",
+        "scopeName": "source.codeowners",
+        "path": "./syntaxes/codeowners.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "CODEOWNERS",
+      "properties": {
+        "codeowners.path": {
+          "type": "string",
+          "default": "",
+          "description": "Custom path to CODEOWNERS file (relative to workspace root). Auto-detects if empty."
+        },
+        "codeowners.individual": {
+          "type": "string",
+          "default": "",
+          "description": "Your GitHub username (e.g., @username) for 'take ownership' actions."
+        },
+        "codeowners.team": {
+          "type": "string",
+          "default": "",
+          "description": "Your team (e.g., @org/team-name) for 'take ownership' actions."
+        },
+        "codeowners.githubToken": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub token for owner validation. Use 'env:VAR_NAME' to read from environment variable."
+        },
+        "codeowners.validateOwners": {
+          "type": "boolean",
+          "default": false,
+          "description": "Validate owners against GitHub API (requires githubToken)."
+        },
+        "codeowners.serverPath": {
+          "type": "string",
+          "default": "",
+          "description": "Custom path to codeowners-lsp binary. Downloads automatically if empty."
+        },
+        "codeowners.diagnostics.invalidPattern": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info",
+            "hint",
+            "off"
+          ],
+          "default": "error",
+          "description": "Severity for invalid glob patterns."
+        },
+        "codeowners.diagnostics.invalidOwner": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info",
+            "hint",
+            "off"
+          ],
+          "default": "error",
+          "description": "Severity for invalid owner format."
+        },
+        "codeowners.diagnostics.patternNoMatch": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info",
+            "hint",
+            "off"
+          ],
+          "default": "warning",
+          "description": "Severity for patterns matching no files."
+        },
+        "codeowners.diagnostics.duplicateOwner": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info",
+            "hint",
+            "off"
+          ],
+          "default": "warning",
+          "description": "Severity for duplicate owners on same rule."
+        },
+        "codeowners.diagnostics.shadowedRule": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info",
+            "hint",
+            "off"
+          ],
+          "default": "warning",
+          "description": "Severity for rules shadowed by earlier rules."
+        },
+        "codeowners.diagnostics.noOwners": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info",
+            "hint",
+            "off"
+          ],
+          "default": "hint",
+          "description": "Severity for rules with no owners."
+        },
+        "codeowners.diagnostics.unownedFiles": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info",
+            "hint",
+            "off"
+          ],
+          "default": "info",
+          "description": "Severity for unowned files in workspace."
+        },
+        "codeowners.diagnostics.githubOwnerNotFound": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info",
+            "hint",
+            "off"
+          ],
+          "default": "warning",
+          "description": "Severity for owners not found on GitHub."
+        },
+        "codeowners.diagnostics.fileNotOwned": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info",
+            "hint",
+            "off"
+          ],
+          "default": "off",
+          "description": "Severity for current file having no CODEOWNERS entry."
+        },
+        "codeowners.inlayHints.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show ownership inlay hints in files."
+        },
+        "codeowners.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Trace communication with the language server."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "codeowners.restartServer",
+        "title": "CODEOWNERS: Restart Language Server"
+      },
+      {
+        "command": "codeowners.showOwnership",
+        "title": "CODEOWNERS: Show File Ownership"
+      },
+      {
+        "command": "codeowners.goToRule",
+        "title": "CODEOWNERS: Go to Matching Rule"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.0.0"
+  }
+}
